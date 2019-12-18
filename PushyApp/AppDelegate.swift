@@ -1,21 +1,26 @@
-//
-//  AppDelegate.swift
-//  PushyApp
-//
-//  Created by Sebastian Gonzalez on 12/17/19.
-//  Copyright © 2019 Sebastian Gonzalez. All rights reserved.
-//
-
 import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    private lazy var remoteNotificationManager = resolve(type: RemoteNotificationManagerProtocol.self)!
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        remoteNotificationManager.setupNotificationHandling()
         return true
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        remoteNotificationManager.handleNotificationRegistrationSuccess(withDeviceToken: deviceToken)
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        remoteNotificationManager.handleNotificationRegistrationError(error: error)
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        remoteNotificationManager.handleSilentNotification(userInfo: userInfo, fetchCompletionHandler: completionHandler)
     }
 
     // MARK: UISceneSession Lifecycle
